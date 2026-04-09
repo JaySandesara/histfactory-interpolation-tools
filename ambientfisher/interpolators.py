@@ -55,7 +55,7 @@ class GaussianProcessInterpolator:
 
         return self.variance * np.exp(-0.5 * sq_distance / (self.length_scale**2))
 
-    def predict(self, alpha: Union[np.ndarray, list], prior_mean = 1.0) -> np.ndarray:
+    def predict(self, alpha: Union[np.ndarray, list], prior_mean_eval = 1.0, prior_mean_train = 1.0) -> np.ndarray:
         """
         Predict ratio(s) at alpha using the GP posterior mean.
         """
@@ -66,10 +66,10 @@ class GaussianProcessInterpolator:
 
         K_eval_train = self._sq_exp_kernel(alpha, self.anchor_alphas)  # (n_eval, n_train)
 
-        _anchor_minus_prior = self.anchor_ratios - prior_mean 
+        _anchor_minus_prior = self.anchor_ratios - prior_mean_train 
 
         # Posterior mean 
-        posterior_mean = prior_mean + K_eval_train @ self._K_train_inverse @ _anchor_minus_prior
+        posterior_mean = prior_mean_eval + K_eval_train @ self._K_train_inverse @ _anchor_minus_prior
 
         return posterior_mean
 
